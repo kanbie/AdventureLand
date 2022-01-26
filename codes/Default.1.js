@@ -1,5 +1,9 @@
 load_code('NodeSupport');
 
+if (character.ctype == 'merchant'){
+	load_code('ItemLoops');
+}
+
 /*
 	Settings
 */
@@ -186,6 +190,9 @@ function calculate_minimum_movement_to_target(){
 */
 
 function handle_inventory(){
+	if(character.ctype == 'merchant'){
+		return;
+	}
 	if(quantity("mpot0") > d_potion_stack || quantity("hpot0") > d_potion_stack) { // some asshole filled my inventory with potions, got to check for this.
 		if (!smart.moving){
 			smart_move({to:"potions"},function(){
@@ -260,9 +267,12 @@ function handle_tithe(){
 		if (character.gold >= allowance ){
 			send_gold(party_directory[0], character.gold - allowance);
 		}
-		character.items
+		for(var i=0;i<42;i++){ //HEY! We won't have any inventory with this!, just saying.
+			if(character.items[i] && G.items[character.items[i].name].compound){
+				send_item(party_directory[0],i,9999);
+			}
+		}
 	}
-	
 }
 
 function update_position(){
