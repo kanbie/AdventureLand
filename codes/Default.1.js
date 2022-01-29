@@ -82,6 +82,7 @@ setInterval(function(){
 setInterval(function(){
 
 	update_inventory_keys();
+	update_inventory_objects();
 
 },interval_timer * 100);
 
@@ -393,6 +394,20 @@ async function update_inventory_keys(){
 	writeToFile(content, filename);
 	log('updated ' + filename);
 }
+
+async function update_inventory_objects(){
+	filename = character.ctype + '_inventory_object.txt'
+	let inventorycontent = [];
+	Object.keys(character.items).forEach(item => {
+		Object.keys(character.items[item]).forEach(itemProp => {
+			inventorycontent.push(itemProp);
+		});
+	});
+	writeToFile(inventorycontent, filename);
+	log('updated ' + filename);
+	log(inventorycontent);
+}
+
 
 
 // Learn Javascript: https://www.codecademy.com/learn/introduction-to-javascript

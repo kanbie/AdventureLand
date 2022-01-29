@@ -1,0 +1,1 @@
+# Kanbie's ADV Land code, its sucks, think twice before using it.
