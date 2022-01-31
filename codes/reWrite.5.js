@@ -131,7 +131,7 @@ async function AttackLoop() {
 }
 AttackLoop();
 
-
+///mcGuffin
 /////////Auxillary Functions
 function distance_to_target(targetName){ // should I just use distance (character,parent.ctarget?);
 	if(parent.ctarget.mtype == targetName){
