@@ -3,7 +3,7 @@
 // Look into promises, and note the await in any async function. // await probably hits every server bound inquiry.
 // How fast do we call ourselves?
 
-async function LoopInterval(functionCall){
+async function LoopInterval(function_called,recall_in_ms){
     try {
         
     } catch (error) {
@@ -11,7 +11,7 @@ async function LoopInterval(functionCall){
     }
     setTimeout(async () => {
         //recall this function
-    }, 250); // 1/4 a second we assumme.
+    }, recall_in_ms); // 1/4 a second we assumme.
     ;
 }
 

@@ -15,4 +15,3 @@ async function writeToFile(content, filename){
         });
     }
 }
-

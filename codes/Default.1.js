@@ -399,6 +399,7 @@ async function update_inventory_objects(){
 	filename = character.ctype + '_inventory_object.txt'
 	let inventorycontent = [];
 	Object.keys(character.items).forEach(item => {
+		if (character.items[item])
 		Object.keys(character.items[item]).forEach(itemProp => {
 			inventorycontent.push(itemProp);
 		});
