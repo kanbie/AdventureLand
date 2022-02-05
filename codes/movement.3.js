@@ -1,4 +1,3 @@
-timeout = 1000;
 
 
 
@@ -9,9 +8,9 @@ async function moveOrder(target) {
             await smart_move('potions')
         }
         else{
-            // if(get_targeted_monster() && distance(character,get_targeted_monster()) > 150){
-            //     await smart_move(target);
-            // }
+            if(!get_targeted_monster()){ // If we can't grab a target we should move to their area.
+                await smart_move(target);
+            }
             if(get_targeted_monster() && distance(character,get_targeted_monster()) > character.range){
                 let targetObj = get_targeted_monster();
                 if(!character.moving){
@@ -31,7 +30,7 @@ async function moveOrder(target) {
     }
     setTimeout(async () => {
         moveOrder(target);
-    }, timeout);
+    }, 400);
 }
 
 function potionTrip(){ //do we need to get to town?
