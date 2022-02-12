@@ -22,5 +22,5 @@ async function targetUpdate(targetType) {
     }
     setTimeout(async () => {
         targetUpdate(nextArg);
-    }, 250);
+    }, 199);
 }

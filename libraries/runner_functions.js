@@ -209,7 +209,7 @@ function quantity(name)
 function item_properties(item) // example: item_properties(character.items[0])
 {
 	if(!item || !item.name) return null;
-	return calculate_item_properties(G.items[item.name],item);
+	return calculate_item_properties(item);
 }
 
 function item_grade(item) // example: item_grade(character.items[0])

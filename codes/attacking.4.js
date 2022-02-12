@@ -1,4 +1,5 @@
 async function attackOrder() {
+    if(character.ctype == 'merchant'){return;}
     try {
         loot();
         if (can_attack(get_targeted_monster())){

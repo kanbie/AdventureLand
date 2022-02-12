@@ -739,9 +739,13 @@ function dps_multiplier(defense) // [10/12/17]
 			max(0,-150-defense)*0.00025
 }
 
-function calculate_item_properties(def,item)
+function calculate_item_properties(item,args)
 {
-	var prop_key=def.name+item.name+(def.card||"")+"|"+item.level+"|"+item.stat_type+"|"+item.p;
+	if(!args) args={};
+	var def=args.def||G.items[item.name],cls="",map="";
+	if(args['class'] && def[args['class']]) cls=args['class'];
+	if(args['map'] && def[args['map']]) cls=args['map'];
+	var prop_key=def.name+item.name+(def.card||"")+"|"+item.level+"|"+item.stat_type+"|"+item.p+"|"+cls+"|"+map;
 	if(prop_cache[prop_key]) return prop_cache[prop_key];
 	//#NEWIDEA: An item cache here [15/11/16]
 	var prop={
