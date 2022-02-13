@@ -1,6 +1,3 @@
-
-
-
 async function moveOrder(target) {
     try {
         if(potionTrip()){
@@ -27,17 +24,17 @@ async function moveOrder(target) {
             console.log('merchant is off to grab some scrolls');
             await smart_move('scrolls');
         }
-        else if(character.ctype == 'merchant'){
-            let upgrade_trip = get('merchant_combine_request');
-            let upgrade_arrived = get('merchant_at_combine');
-            console.log('movement');
-            console.log(upgrade_trip);
-            console.log(upgrade_arrived);
-            if(upgrade_trip == true && upgrade_arrived == false){
-            //if(true && !false){
-                console.log('smart_move_here');
-                await smart_move('compound');
-                set('merchant_at_combine', true);
+        else if(character.ctype == 'merchant'){ // Merchant Only from here
+            if (get('merchant_combine_request') == true) {
+                let upgrade_arrived = get('merchant_at_combine');
+                if(upgrade_arrived == false){
+                //if(true && !false){
+                    console.log('smart_move_here');
+                    await smart_move('compound');
+                    set('merchant_at_combine', true);
+                } 
+            } else {// We have nothing to do.
+                await smart_move('town');
             }
         }
     } catch (err) {
@@ -52,7 +49,9 @@ async function moveOrder(target) {
 
 function potionTrip(){ //do we need to get to town?
     if(quantity("mpot0") < 3 || quantity("hpot0") < 3 || character.esize < 10){
-        return true;
+        if(character.ctype != 'merchant'){
+            return true;
+        }
     }
     else{
         return false;
@@ -70,7 +69,7 @@ function scrollTrip(){ //do we need to get scrolls?
     let lets_go_to_scrolls = 0;
 
     for (item in scroll = [low_scroll,high_scroll]){
-        if (scroll[item] < 10){
+        if (character.items[scroll[item]] < 10){
             lets_go_to_scrolls++
         }
     }

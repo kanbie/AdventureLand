@@ -15,14 +15,14 @@ if (character.ctype == 'merchant'){
 }
 
 // Global Settings
-let primary_target = 'goo';
+let primary_target = 'croc';
 console.log(primary_target);
 
 let party_directory = ['TwelvePounds','Solamare','CprCertified','Secretary','NoAuto'];
 
 //Todo, have targetUpdate actually update our target for the rest of the bros.
 
-initParty();
+//initParty();
 targetUpdate(primary_target); 
 moveOrder(primary_target);
 attackOrder(primary_target);

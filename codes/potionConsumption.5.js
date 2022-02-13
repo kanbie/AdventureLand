@@ -9,7 +9,9 @@ let last_use_hp_potion = null;
 
 async function drinkPots(){
     try {
-            if(character.mp <= character.mp_cost * 5){
+            if(character.rip){
+                respawn();   
+            } else if(character.mp <= character.mp_cost * 5){
                 if(last_use_mp_potion == null || new Date() - last_use_mp_potion >= parent.G.skills.use_mp.cooldown){
                     //pop a mana potion to keep the attacks flowing
                     use_skill('use_mp');

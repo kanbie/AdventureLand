@@ -16,7 +16,6 @@ async function maintainParty(party){
             accept_party_invite(party[0]);
         }else{
             for(attendee in party){
-                console.log(attendee);
                 if(!parent.party_list.includes(party[attendee])){
                     send_party_invite(party[attendee]);
                 }

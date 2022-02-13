@@ -1,3 +1,5 @@
+const { arrayBuffer } = require("stream/consumers");
+
 //Merchant specific calls and load_code() will be executed here.
 set('merchant_at_combine', false);
 set('merchant_combine_request',false);
@@ -5,6 +7,8 @@ set('merchant_combine_request',false);
 async function lowLevelCombine(){
     try {
         let itemsToConvert = stageCombine(1);
+        console.log(itemsToConvert);
+        console.log('debug');
         if (itemsToConvert){
             scrollCheck();
             set('merchant_combine_request',true)
@@ -25,56 +29,66 @@ async function lowLevelCombine(){
 // it is primarlly a hueristic function, it will upgrade items blindly against maxLevel
 function stageCombine(maxLevel){
     try {
-        itemIndex = []; // index of slots that could be combined
-        for (let slot in character.items) {
-            // check for an item and if it is compoundable
-            if (character.items[slot] && character.items[slot].name && G.items[character.items[slot].name].hasOwnProperty('compound')){
-                if (character.items[slot].level <= maxLevel){
-                    itemIndex.push(slot);
-                }
+        levelCheck = [0,1,2,3,4,5,6,7];
+        inventory = character.items;
+        for (level in levelCheck){
+            if (level == maxLevel){
+                return null;
             }
-        }
-        // we now have an index of compoundable slots. lets grab their names
-        compoundables = {};
-        itemNames = [];
-        for (let slot in itemIndex) {
-            compoundables[character.items[itemIndex[slot]].name] = {
-                name: character.items[itemIndex[slot]].name,
-                amount: 0,
-                level: []
-            };
-    
-            // example object entry: compoundables {item: {name, amount, level}} 
-    
-            itemNames.push([character.items[itemIndex[slot]].name, itemIndex[slot]]);
-        }
-
-        for (let name in itemNames){
-            compoundables[itemNames[name][0]].amount++;
-            compoundables[itemNames[name][0]].level.push(character.items[itemNames[name][1]].level)
-        }
-
-        // compoundables has the number of duplicates, but each item needs to be an identical level, we captured the level of the items in the level property
-        // we should iterate over the level list and see if we have a triplet to combine at the vendor.
-        returnPackage = []; // slot 1, slot 2, slot 3, scroll slot.
-        for (item in compoundables){
-            for (level in [0,1,2,3,4,5,6,7]){
-                isItAtThreeYet = 0;
-                for (levelInstance in compoundables[item].level){
-                    if (level == compoundables[item].level[levelInstance]){
-                        isItAtThreeYet++
-                    }
-                    if (isItAtThreeYet >= 3 && level <= maxLevel) {
-                        apple = findSlotsCompound(item, level);
-                        return apple;
+            console.log('level');
+            console.log(level);
+            // need to iterate over my inventory here; note we need to match NAME, COMPOUND, and LEVEL properties to secure a match.
+            for (slot1 in inventory){
+                if (inventory[slot1] && ((slot_1_level = inventory[slot1].level) != null) && slot_1_level == level){ // Does the item exist
+                    console.log('slot_1_level');
+                    console.log(slot_1_level );
+                    let item1 = [itemInSlotName(slot1), hasCompoundProperty(slot1),slot_1_level];
+                    for (slot2 = slot1; slot2 < inventory.length; slot2++){ //continue looping but hold slot1
+                        if (inventory[slot2] && ((slot_2_level = inventory[slot2].level) != null) && slot_2_level == level){
+                            let item1 = [itemInSlotName(slot2), hasCompoundProperty(slot2),slot_2_level];
+                            for (slot3 = slot2; slot3 < inventory.length; slot3++){
+                                if (inventory[slot3] && ((slot_3_level = inventory[slot3].level) != null) && slot_3_level == level){
+                                    let item3 = [itemInSlotName(slot3), hasCompoundProperty(slot3),slot_3_level];
+                                    console.log('apple');
+                                    console.log(item1);
+                                    console.log(item2);
+                                    console.log(item3);
+                                    // if (JSON.stringify(item1) == JSON.stringify(item2) == JSON.stringify(item3)){
+                                    if (item1 == item2 == item3){
+                                        if (item1.compoundable == true){
+                                            console.log('match for compound found')
+                                            return [slot1,slot2,slot3];
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-        return null; // we don't have any items to compound
+        return null;
     } catch (err) {
         console.error(err);
     }
+}
+
+for (let index = 0; index < array.length; index++) {
+    const element = array[index];
+    
+}
+
+function itemInSlotName(slot){
+    if (character.items[slot]){
+        if (character.items[slot].name){
+            return character.items[slot].name;
+        }
+    }
+    return null;
+}
+
+function hasCompoundProperty(itemName){
+    return G.items[itemName].hasOwnProperty('compound');
 }
 
 //provides a set of indexs for compounding
