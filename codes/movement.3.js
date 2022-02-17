@@ -29,18 +29,18 @@ async function moveOrder(target) {
                 let upgrade_arrived = get('merchant_at_combine');
                 if(upgrade_arrived == false){
                 //if(true && !false){
-                    console.log('smart_move_here');
                     await smart_move('compound');
                     set('merchant_at_combine', true);
                 } 
             } else {// We have nothing to do.
-                await smart_move('town');
+                if(character.real_x != 0 && character.real_y != 0){
+                    await smart_move('town');
+                }
             }
         }
     } catch (err) {
         console.log('error in moveOrder');
         console.error(err);
-        console.log(target);
     }
     setTimeout(async () => {
         moveOrder(target);

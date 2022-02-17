@@ -14,9 +14,17 @@ if (character.ctype == 'merchant'){
     lowLevelCombine();
 }
 
+if (character.ctype == 'priest'){
+    load_code('priestSkillsRoutines');
+}
+
+//Clerical Loads
+load_code('nodeFileHelpers');
+load_code('UIFIXES'); //hazzah
+
 // Global Settings
-let primary_target = 'croc';
-console.log(primary_target);
+let primary_target = 'rat';
+console.log(character.name + ' has the primary target: ' +primary_target);
 
 let party_directory = ['TwelvePounds','Solamare','CprCertified','Secretary','NoAuto'];
 
@@ -34,6 +42,8 @@ vacateItems();
 
 
 
+//call Clerical functions last
+inventoryToFile();
 
 
 
@@ -43,22 +53,4 @@ vacateItems();
 
 
 
-
-// node.js code goes here.
-
-const fs = require('fs');
-const homedir = require('os').homedir();
-const workingDir = homedir + '/AdventureLandStorage/';
-
-/*
-    writeToFile accepts the file content and a filename, this creates and overwrites the file on use.
-*/
-async function writeToFile(content, filename){
-    if (typeof(filename) == 'string'){
-        fs.writeFile(workingDir + filename, content, writeError => {
-            console.error(writeError);
-            return
-        });
-    }
-}
 

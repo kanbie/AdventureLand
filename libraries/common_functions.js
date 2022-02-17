@@ -739,14 +739,33 @@ function dps_multiplier(defense) // [10/12/17]
 			max(0,-150-defense)*0.00025
 }
 
+function adopt_extras(def,ex)
+{
+	for(var p in ex)
+	{
+		if(p=='upgrade' || p=='compound')
+		{
+			for(var pp in ex)
+			{
+				def[p][pp]=(def[p][pp]||0)+ex[p][pp];
+			}
+		}
+		else
+			def[p]=(def[p]||0)+ex[p];
+	}
+}
+
 function calculate_item_properties(item,args)
 {
 	if(!args) args={};
 	var def=args.def||G.items[item.name],cls="",map="";
 	if(args['class'] && def[args['class']]) cls=args['class'];
-	if(args['map'] && def[args['map']]) cls=args['map'];
+	if(args['map'] && def[args['map']]) map=args['map'];
 	var prop_key=def.name+item.name+(def.card||"")+"|"+item.level+"|"+item.stat_type+"|"+item.p+"|"+cls+"|"+map;
 	if(prop_cache[prop_key]) return prop_cache[prop_key];
+	if(cls || map) def=clone(def);
+	if(cls) adopt_extras(def,def[cls]);
+	if(map) adopt_extras(def,def[map]);
 	//#NEWIDEA: An item cache here [15/11/16]
 	var prop={
 		"gold":0,

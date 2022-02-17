@@ -1,6 +1,6 @@
 //settings
 
-let healthpot_healing_factor = 200;
+let healthpot_healing_factor = 700;
 let manapot_regeneration_factor  = 200;
 let priest_healing_room = 200;
 let last_use_mp_potion = null;

@@ -1,5 +1,3 @@
-const { arrayBuffer } = require("stream/consumers");
-
 //Merchant specific calls and load_code() will be executed here.
 set('merchant_at_combine', false);
 set('merchant_combine_request',false);
@@ -29,53 +27,39 @@ async function lowLevelCombine(){
 // it is primarlly a hueristic function, it will upgrade items blindly against maxLevel
 function stageCombine(maxLevel){
     try {
-        levelCheck = [0,1,2,3,4,5,6,7];
+        let levelCheck = [0,1,2,3,4,5,6,7];
         inventory = character.items;
         for (level in levelCheck){
-            if (level == maxLevel){
+            if (level > maxLevel){
                 return null;
-            }
-            console.log('level');
-            console.log(level);
-            // need to iterate over my inventory here; note we need to match NAME, COMPOUND, and LEVEL properties to secure a match.
-            for (slot1 in inventory){
-                if (inventory[slot1] && ((slot_1_level = inventory[slot1].level) != null) && slot_1_level == level){ // Does the item exist
-                    console.log('slot_1_level');
-                    console.log(slot_1_level );
-                    let item1 = [itemInSlotName(slot1), hasCompoundProperty(slot1),slot_1_level];
-                    for (slot2 = slot1; slot2 < inventory.length; slot2++){ //continue looping but hold slot1
-                        if (inventory[slot2] && ((slot_2_level = inventory[slot2].level) != null) && slot_2_level == level){
-                            let item1 = [itemInSlotName(slot2), hasCompoundProperty(slot2),slot_2_level];
-                            for (slot3 = slot2; slot3 < inventory.length; slot3++){
-                                if (inventory[slot3] && ((slot_3_level = inventory[slot3].level) != null) && slot_3_level == level){
-                                    let item3 = [itemInSlotName(slot3), hasCompoundProperty(slot3),slot_3_level];
-                                    console.log('apple');
-                                    console.log(item1);
-                                    console.log(item2);
-                                    console.log(item3);
-                                    // if (JSON.stringify(item1) == JSON.stringify(item2) == JSON.stringify(item3)){
-                                    if (item1 == item2 == item3){
-                                        if (item1.compoundable == true){
-                                            console.log('match for compound found')
-                                            return [slot1,slot2,slot3];
-                                        }
-                                    }
-                                }
-                            }
+            }else{
+                stage = {};
+                for (slot in inventory){
+                    if(isValidItemCompound(inventory[slot])){
+                        stage[inventory[slot].name + inventory[slot].level] = {
+                            name: inventory[slot].name,
+                            slot: [],
+                            level: inventory[slot].level // can probably exclude; is metadata
                         }
+                    }
+                }
+                for (slot in inventory){
+                    if(isValidItemCompound(inventory[slot])){
+                        stage[inventory[slot].name + inventory[slot].level].slot.push(slot);
+                    }
+                }
+                for (item in stage){
+                    if (stage[item].slot.length >= 3){
+                        return stage[item].slot.slice(0,3);
                     }
                 }
             }
         }
         return null;
+        
     } catch (err) {
         console.error(err);
     }
-}
-
-for (let index = 0; index < array.length; index++) {
-    const element = array[index];
-    
 }
 
 function itemInSlotName(slot){
@@ -156,5 +140,17 @@ async function compoundThese(itemIndex) {
 
     } catch (err) {
         console.log(err);
+    }
+}
+
+function isValidItemCompound(itemObject){
+    if(itemObject){
+        if(itemObject.name){
+            if(itemObject.hasOwnProperty('level')){
+                if(G.items[itemObject.name].hasOwnProperty('compound')){
+                    return true;
+                }
+            }
+        }
     }
 }

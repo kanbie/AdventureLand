@@ -29,3 +29,13 @@ async function maintainParty(party){
         maintainParty(party);
     }, 10 * 1000); // 10 second loop
 }
+
+function stopParty(party = ['TwelvePounds','Solamare','CprCertified','Secretary']){
+    stop_character(party[1]);
+    stop_character(party[2]);
+    stop_character(party[3]);
+}
+
+function spinUp(targetByNameNotSlot){
+    start_character(targetByNameNotSlot, 'mainLine');
+}

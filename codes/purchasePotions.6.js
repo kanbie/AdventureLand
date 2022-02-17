@@ -13,7 +13,7 @@ async function purchasePotions(){
             buy_with_gold('mpot0', potions_stock_target - quantity('mpot0'));
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
     }
     setTimeout(async () => {
         purchasePotions();
