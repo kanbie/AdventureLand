@@ -388,9 +388,17 @@ function hardcore_logic()
 	// G.items.weaponbox.a=0;
 }
 
-function can_stack(a,b,d)
+function can_stack(a,b,d,args)
 {
-	if(a && b && a.name && G.items[a.name].s && a.name==b.name && a.l==b.l && a.q+b.q+(d||0)<=(G.items[a.name].s===true&&9999||G.items[a.name].s) && (a.name!="cxjar" || a.data==b.data) && (a.name!="emotionjar" || a.data==b.data)) return true;
+	if(a && b && a.name && G.items[a.name].s && a.name==b.name && a.q+b.q+(d||0)<=(G.items[a.name].s===true&&9999||G.items[a.name].s))
+	{
+		if((a.p || b.p) && a.p!=b.p) return false; // property
+		if(a.name=="cxjar" && a.data!=b.data) return false;
+		if(a.name=="emotionjar" && a.data!=b.data) return false;
+		if(!args || !args.ignore_pvp) if(a.v && !b.v || !a.v && b.v) return false; // pvp
+		if(a.l || b.l || a.b || b.b) return false; // blocked and locked
+		return true;
+	}
 	return false;
 }
 
@@ -441,6 +449,7 @@ function can_add_items(player,items,args)
 	return false;
 }
 
+var RESOLVE_ALL=false;
 var deferreds={},current_deferred=null;
 function deferred()
 {
@@ -484,8 +493,11 @@ function reject_deferreds(name,data)
 
 function resolve_deferred(name,data)
 {
-	if(name=="attack" && (!deferreds.attack || !deferreds.attack.length) && deferreds.heal && deferreds.heal.length) name="heal"; // cupid logic [23/09/19]
-	if(name=="heal" && (!deferreds.heal || !deferreds.heal.length) && deferreds.attack && deferreds.attack.length) name="attack"; // ~impossible to perfectly predict the call/result
+	if(!data) data={success:true};
+	if(data.success!==false && !data.failed) data.success=true;
+	if(is_sdk) console.log(["resolve",name,data]);
+	// if(name=="attack" && (!deferreds.attack || !deferreds.attack.length) && deferreds.heal && deferreds.heal.length) name="heal"; // cupid logic [23/09/19]
+	// if(name=="heal" && (!deferreds.heal || !deferreds.heal.length) && deferreds.attack && deferreds.attack.length) name="attack"; // ~impossible to perfectly predict the call/result
 	if(!deferreds[name] || !deferreds[name].length) return console.error("Weird resolve_deferred issue: "+name),console.log("If you emit socket events manually, ignore this message");
 	current_deferred=deferreds[name].shift();
 	if(!deferreds[name].length)	delete deferreds[name];
@@ -509,6 +521,9 @@ function resolve_deferred(name,data)
 
 function reject_deferred(name,data)
 {
+	if(!data) data={failed:true};
+	data.failed=true;
+	if(RESOLVE_ALL) return resolve_deferred(name,data);
 	if(!deferreds[name] || !deferreds[name].length) return console.error("Weird reject_deferred issue: "+name),console.log("If you emit socket events manually, ignore this message");
 	current_deferred=deferreds[name].shift();
 	if(!deferreds[name].length)	delete deferreds[name];
@@ -526,11 +541,16 @@ function reject_deferred(name,data)
 
 function rejecting_promise(data)
 {
-	return new Promise(function(resolve,reject){ reject(data); });
+	if(!data) data={failed:true};
+	if(!data.reason) data.reason="unknown";
+	data.failed=true;
+	return new Promise(function(resolve,reject){ if(RESOLVE_ALL) resolve(data); else reject(data); });
 }
 
 function resolving_promise(data)
 {
+	if(!data) data={success:true};
+	if(data.success!==false && !data.failed) data.success=true;
 	return new Promise(function(resolve,reject){ resolve(data); });
 }
 
@@ -595,9 +615,11 @@ function within_xy_range(observer,entity)
 	return false;
 }
 
-function distance(a,b,in_check)
+function distance(a,b) // refactored in_check / removed it [07/05/22]
 {
-	if(in_check && a['in']!=b['in']) return 99999999;
+	if(!a || !b) return 99999999;
+	if('in' in a && 'in' in b && a['in']!=b['in']) return 99999999;
+	if('map' in a && 'map' in b && a['map']!=b['map']) return 99999999;
 	if(get_width(a) && get_width(b))
 	{
 		var min_d=99999999,a_w=get_width(a),a_h=get_height(a),b_w=get_width(b),b_h=get_height(b),dist;
@@ -619,6 +641,49 @@ function distance(a,b,in_check)
 		return min_d;
 	}
 	return simple_distance(a,b);
+}
+
+function distance(_a, _b) {
+	// [10/05/22] https://discord.com/channels/238332476743745536/949729873142878249/963682960626831370
+	if(!_a || !_b) return 99999999;
+	if('in' in _a && 'in' in _b && _a['in']!=_b['in']) return 99999999;
+	if('map' in _a && 'map' in _b && _a['map']!=_b['map']) return 99999999;
+
+	const a_x = get_x(_a)
+	const a_y = get_y(_a)
+	const b_x = get_x(_b)
+	const b_y = get_y(_b)
+  
+	const a_w2 = get_width(_a) / 2
+	const a_h = get_height(_a)
+	const b_w2 = get_width(_b) / 2
+	const b_h = get_height(_b)
+
+	// Check if they're just 2 points
+	if(a_w2 == 0 && a_h == 0 && b_w2 == 0 && a_h == 0) return Math.hypot(a_x - b_x, a_y - b_y)
+
+	// Check overlap
+	if ((a_x - a_w2) < (b_x + b_w2)
+		&& (a_x + a_w2) > (b_x - b_w2)
+		&& (a_y + a_h) > (b_y)
+		&& (a_y) < (b_y + b_h)) return 0
+
+	// TODO: If one is just a single point, we're computing 8 needless calculations.
+	// Compare the 4 corners to each other
+	let min = 99999999
+	for(const a_c of [{ x: a_x + a_w2, y: a_y + a_h},
+					  { x: a_x + a_w2, y: a_y},
+					  { x: a_x - a_w2, y: a_y + a_h},
+					  { x: a_x - a_w2, y: a_y}]) {
+	  for(const b_c of [{ x: b_x + b_w2, y: b_y + b_h},
+						{ x: b_x + b_w2, y: b_y},
+						{ x: b_x - b_w2, y: b_y + b_h},
+						{ x: b_x - b_w2, y: b_y}]) {
+		const d = Math.hypot(a_c.x - b_c.x, a_c.y - b_c.y)
+		if(d < min) min = d
+	  }
+	}
+	return min
 }
 
 function random_away(x,y,R) // https://stackoverflow.com/a/5838055/914546
@@ -649,7 +714,7 @@ function is_silenced(entity)
 
 function is_disabled(entity)
 {
-	if(!entity || entity.rip || (entity.s && (entity.s.stunned || entity.s.fingered || entity.s.stoned || entity.s.deepfreezed))) return true;
+	if(!entity || entity.rip || (entity.s && (entity.s.stunned || entity.s.fingered || entity.s.stoned || entity.s.deepfreezed || entity.s.sleeping))) return true;
 }
 
 function calculate_item_grade(def,item)
@@ -677,7 +742,8 @@ function calculate_item_value(item,m)
 			else if(i>grades[0]) grade=1;
 			if(def.cash) value*=1.5;
 			else value*=3.2;
-			value+=G.items["cscroll"+grade].g/2.4;
+			if(def.type!="booster") value+=G.items["cscroll"+grade].g/2.4;
+			else value*=0.75;
 		}
 	}
 	if(def.upgrade && item.level)
@@ -785,10 +851,13 @@ function calculate_item_properties(item,args)
 		"attack":0,
 		"range":0,
 		"armor":0,
+		"incdmgamp":0,
 		"resistance":0,
 		"pnresistance":0,
 		"firesistance":0,
 		"fzresistance":0,
+		"phresistance":0,
+		"stresistance":0,
 		"stun":0,
 		"blast":0,
 		"explosion":0,
@@ -958,6 +1027,7 @@ function floor_f2(num)
 
 function to_pretty_float(num)
 {
+	return (0 + Math.trunc((num||0) * 100) / 100).toLocaleString("en-US");
 	if(!num) return "0";
 	var hnum=floor_f2(num).toFixed(2),num=parseFloat(hnum);
 	if(parseFloat(hnum)==parseFloat(num.toFixed(1))) hnum=num.toFixed(1);
@@ -967,6 +1037,7 @@ function to_pretty_float(num)
 
 function to_pretty_num(num)
 {
+	return (Math.floor(num||0) + 0).toLocaleString("en-US");
 	if(!num) return "0";
 	num=round(num);
 	var pretty="";
@@ -1502,6 +1573,11 @@ function stop_logic(monster)
 		{
 			resolve_deferreds("move",{reason:"stopped"});
 			showhide_quirks_logic();
+		}
+		if(monster.is_monster && !monster.target && is_server && E.schedule.night && Math.random()<0.4)
+		{
+			monster.s.sleeping={"ms":3000+5000*Math.random()};
+			monster.u=true; monster.cid++;
 		}
 	}
 }

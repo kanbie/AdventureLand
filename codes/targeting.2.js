@@ -1,26 +1,19 @@
-//These functions keep our target/focus up to date.
-
-/*
-Some notes about targets,
-get_target(); - returns our current focus, we can use this to remember our previous state
-Object properties of import;
-    .type - monster or somthing else?
-    .mtype - for monsters, contains the name of the object found in G.monsters[mtype]
-    .name - mostly useless, only for presentations sould this be used, but not to reference in code.
-*/
-
-
-async function targetUpdate(targetType) {
-    let nextArg = targetType;
+async function targetingSubroutine(mark) {
+    timeout = 200;
     try {
-        previous_state = get_targeted_monster();
-        if (!previous_state){
-            change_target(get_nearest_monster({no_target: true, type: targetType}));
+        // Loop goes here...
+
+        //Do I have a target?
+        previousMark = get_targeted_monster();
+        //Do nothing if previousMark returns an item, change to new target if it returns null
+        if (!previousMark || parent.ctarget.dead){
+            change_target(get_nearest_monster({no_target: true, type: mark}));
+            character.mark = mark; // Do I want to store the object or just the nam 
         }
-    } catch (err) {
-        error(err);
+        
+    } catch (error) {
     }
     setTimeout(async () => {
-        targetUpdate(nextArg);
-    }, 199);
+        targetingSubroutine(mark);
+    }, timeout);
 }

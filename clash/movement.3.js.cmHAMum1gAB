@@ -1,0 +1,26 @@
+async function movementSubroutine(mark) {
+    timeout = 200;
+    try {
+        //am I close to my target?
+        let mark = get_target();
+        if (mark && distance(mark) < character.range) {
+            break;
+        }
+        else{
+            smart_move(mark);
+        }
+
+        
+    } catch (error) {
+        setTimeout(async () => {
+            fun(nextParams);
+        }, timeout);
+    }
+}
+
+
+/// if my target exists and I'm wihin range.
+    //do nothing
+/// otherwise, I'm not in range
+    //move.
+// might need to get closer as well. but smart move to start.

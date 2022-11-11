@@ -67,6 +67,10 @@ function in_attack_range(target) // also works for priests/heal
 	return false;
 }
 
+function is_pvp(){return in_pvp()}
+
+function is_player(e){return is_character(e);}
+
 function destroy_item(i){destroy(i)}
 
 character.on("stacked",function(){ on_combined_damage(); });

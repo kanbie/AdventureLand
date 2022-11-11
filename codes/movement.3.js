@@ -1,81 +1,30 @@
-async function moveOrder(target) {
+async function movementSubroutine() {
+    timeout = 200;
     try {
-        if(potionTrip()){
-            console.log('gonna go to town');
-            await smart_move('potions');
+        //am I close to my target?
+        let mark = get_target();
+        if (mark && distance(mark) > character.range) {
+            await smart_move(mark);
         }
-        else if(character.ctype != 'merchant'){
-            if(!get_targeted_monster()){ // If we can't grab a target we should move to their area.
-                await smart_move(target);
-            }
-            if(get_targeted_monster() && distance(character,get_targeted_monster()) > character.range){
-                let targetObj = get_targeted_monster();
-                if(!character.moving){
-                    var half_x = character.real_x + (targetObj.real_x - character.real_x) / 2;
-                    var half_y = character.real_y + (targetObj.real_y - character.real_y) / 2;
-                    move(half_x, half_y);
-                }
-            }
-            else if(!(distance(character,get_targeted_monster()) < character.range)){
-                await smart_move(target);
-            }
+        else if(mark && distance(mark) < character.range){
+            move(parent.ctarget.x,parent.ctarget.y); //be smart, but be smart later, we need to NOT stand on the monster to avoid stacking debuffs.
         }
-        else if(character.ctype == 'merchant' && scrollTrip()){
-            console.log('merchant is off to grab some scrolls');
-            await smart_move('scrolls');
-        }
-        else if(character.ctype == 'merchant'){ // Merchant Only from here
-            if (get('merchant_combine_request') == true) {
-                let upgrade_arrived = get('merchant_at_combine');
-                if(upgrade_arrived == false){
-                //if(true && !false){
-                    await smart_move('compound');
-                    set('merchant_at_combine', true);
-                } 
-            } else {// We have nothing to do.
-                if(character.real_x != 0 && character.real_y != 0){
-                    await smart_move('town');
-                }
-            }
-        }
-    } catch (err) {
-        console.log('error in moveOrder');
-        console.error(err);
+        // else{
+        //     await smart_move(character.mark);
+        // }
+
+        
+    } catch (error) {
+        
     }
     setTimeout(async () => {
-        moveOrder(target);
-    }, 400);
+        movementSubroutine();
+    }, timeout);
 }
 
-function potionTrip(){ //do we need to get to town?
-    if(quantity("mpot0") < 3 || quantity("hpot0") < 3 || character.esize < 10){
-        if(character.ctype != 'merchant'){
-            return true;
-        }
-    }
-    else{
-        return false;
-    }
-}
 
-function scrollTrip(){ //do we need to get scrolls?
-    if (character.ctype != 'merchant'){
-        return;
-    }
-    
-    let low_scroll = findItemIndex("cscroll0");
-    let high_scroll = findItemIndex("cscroll1");
-
-    let lets_go_to_scrolls = 0;
-
-    for (item in scroll = [low_scroll,high_scroll]){
-        if (character.items[scroll[item]] < 10){
-            lets_go_to_scrolls++
-        }
-    }
-
-    if (lets_go_to_scrolls > 0){
-        return true;
-    }
-    return false;
-}
+/// if my target exists and I'm wihin range.
+    //do nothing
+/// otherwise, I'm not in range
+    //move.
+// might need to get closer as well. but smart move to start.
