@@ -3,15 +3,16 @@ async function movementSubroutine() {
     try {
         //am I close to my target?
         let mark = get_target();
-        if (mark && distance(mark) > character.range) {
+        let markDistance = distance(character,mark);
+        if (!mark.dead && markDistance > character.range) {
             await smart_move(mark);
         }
-        else if(mark && distance(mark) < character.range){
+        else if(!mark.dead && markDistance < character.range){
             move(parent.ctarget.x,parent.ctarget.y); //be smart, but be smart later, we need to NOT stand on the monster to avoid stacking debuffs.
         }
-        // else{
-        //     await smart_move(character.mark);
-        // }
+        else{
+            await smart_move(mark);
+        }
 
         
     } catch (error) {
