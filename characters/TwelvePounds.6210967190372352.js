@@ -1,1 +1,1 @@
-load_code("Main");
+load_code("main");
