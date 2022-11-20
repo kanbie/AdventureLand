@@ -1,0 +1,12 @@
+async function fun() {
+    timeout = 2000;
+    try {
+        send_cm("twelvepounds")
+        
+    } catch (error) {
+
+    }
+    setTimeout(async () => {
+        report();
+    }, timeout);
+}

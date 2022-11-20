@@ -1,23 +1,36 @@
+//misc Load functions
+load_code("helper");
+
+
+
+
 //init our global memory "myself"
 let myself = { // go to the darkside
-    markName : "goo",
+    id : character.name,
+    markName : "bee",
     mark : get_target(),
-    alert : null
+    alert : {
+        hp: null,
+        mp: null,
+        
+    },
+    others : {},
+    cc : {
+        local: [0,0,0]
+    },
+    inventory : {}
 };
 
 if (character.name == "TwelvePounds") {
-    start_character("Solamare","Main");
-    start_character("CprCertified","Main");
-    start_character("NoAuto","Main");
+    start_character("Solamare","main");
+    start_character("CprCertified","main");
+    start_character("NoAuto","main");
 } else {
     console.log(character.name + " reporting!");
 }
 
 // Non-Merchant Code and Module Init
 if (character.ctype !== "merchant") {
-    // Enable Self Reporting
-    load_code("alerts");
-    alertSubroutine();
     // Targeting
     load_code("targeting");
     targetingSubroutine();
@@ -30,9 +43,20 @@ if (character.ctype !== "merchant") {
     // Resources, Consumeables
     load_code("resources");
     resourceManagement();
+    // Communication
+    load_code("alerts");
+    alertSubroutine();
+    load_code("messaging");
+    report();
+    metrics();
 }
+else{
+    load_code("messaging");
+    metrics();
+}// Merchant Loads Code
 
-console.log(myself);
+
+// console.log(myself);
 
 /*
 const charClass = character.ctype[0].toUpperCase() + character.ctype.substring(1);
@@ -40,3 +64,8 @@ load_code(`${charClass}`);
 
 Ask colby on naming convention when you make a class specific file.
 */
+
+
+character.on("cm",function(data){ //(data.name,data.message) 
+    myself.others[data.name] = data.message;
+});

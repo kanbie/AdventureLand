@@ -38,10 +38,10 @@ function use(name,target) // a multi-purpose use function, works for skills too
 	}
 }
 
-function on_cm(name,data)
-{
-	game_log("Received a code message from: "+name);
-}
+// function on_cm(name,data)
+// {
+// 	game_log("Received a code message from: "+name);
+// }
 
 function on_combined_damage() // When multiple characters stay in the same spot, they receive combined damage, this function gets called whenever a monster deals combined damage
 {
@@ -75,7 +75,7 @@ function destroy_item(i){destroy(i)}
 
 character.on("stacked",function(){ on_combined_damage(); });
 character.on("death",function(){ handle_death(); });
-character.one("cm",function(data){ on_cm(data.name,data.message) });
+//character.on("cm",function(data){ on_cm(data.name,data.message) });
 
 // [06/03/19]: doneify aimed to add a completion callback to every function
 // such as buy("shoes").done(function(success_flag,data){})
