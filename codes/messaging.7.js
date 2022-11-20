@@ -22,6 +22,7 @@ async function metrics() {
 
         // Log Inventory
         logInventory();
+        logPotions();
 
     } catch (error) {
 
@@ -60,4 +61,16 @@ function logInventory(){
 
     myself.inventory = inventoryStub;
     //console.log(inventoryStub);
+}
+
+function logPotions(){
+    let hpot0Slot = findItemIndex("hpot0"); 
+    let mpot0Slot = findItemIndex("mpot0");
+    let hpot1Slot = findItemIndex("hpot1");
+    let mpot1Slot = findItemIndex("mpot1");
+
+    myself.potions.hpot0 = character.items[hpot0Slot].q;
+    myself.potions.mpot0 = character.items[mpot0Slot].q;
+    myself.potions.hpot1 = character.items[hpot1Slot].q;
+    myself.potions.mpot1 = character.items[mpot1Slot].q;
 }

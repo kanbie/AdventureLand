@@ -4,15 +4,12 @@ async function alertSubroutine() {
     try {
 
         if (character.mp / character.max_mp < 0.25) {
-            myself.alert = "mp_low";
+            myself.alert.low_mp = true;
         }
-        else if (character.hp / character.max_hp < 0.5) {
-            myself.alert = "hp_low";
+        if (character.hp / character.max_hp < 0.5) {
+            myself.alert.low_hp = true;
         }
-        else{
-            myself.alert = null;
-        }
-
+        myself.alert.rip = character.rip; // we can always update this
     } catch (error) {
 
     }

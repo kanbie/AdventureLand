@@ -10,13 +10,19 @@ let myself = { // go to the darkside
     markName : "bee",
     mark : get_target(),
     alert : {
-        hp: null,
-        mp: null,
-        
+        low_hp: false,
+        low_mp: false,
+        rip: character.rip,
     },
     others : {},
     cc : {
         local: [0,0,0]
+    },
+    potions: {
+        hpot0 : 0,
+        mpot0 : 0,
+        hpot1 : 0,
+        mpot1 : 0,
     },
     inventory : {}
 };
@@ -24,7 +30,7 @@ let myself = { // go to the darkside
 if (character.name == "TwelvePounds") {
     start_character("Solamare","main");
     start_character("CprCertified","main");
-    start_character("NoAuto","main");
+    start_character("Secretary","main");
 } else {
     console.log(character.name + " reporting!");
 }
@@ -49,11 +55,19 @@ if (character.ctype !== "merchant") {
     load_code("messaging");
     report();
     metrics();
+    // Party Logistics
+    load_code("party");
+    maintainParty();
 }
-else{
+else{ // Merchant Loads Code
     load_code("messaging");
     metrics();
-}// Merchant Loads Code
+    load_code("party");
+    maintainParty();
+    load_code("merchanting");
+    potionPurchaseProgram();
+    potionDeliveryProgram();
+}
 
 
 // console.log(myself);
