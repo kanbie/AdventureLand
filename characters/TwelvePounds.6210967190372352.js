@@ -4,7 +4,7 @@ async function consoleLog() {
     timeout = 20000;
     try {
         console.log(myself);
-        
+       
     } catch (error) {
 
     }

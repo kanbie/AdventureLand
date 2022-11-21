@@ -11,6 +11,28 @@ function findItemIndex(itemName){
     return null;
 }
 
+function requestMove(location, lock = true) {
+	if (myself.movement.lock == false) {
+		myself.movement.location = location;
+		myself.movement.arrived = false;
+		if (lock == true) myself.movement.lock = true;
+		if (myself.others[location].id == location) {
+			myself.movement.party = true;
+		} else {
+			myself.movement.party = false;
+		}	
+	}
+}
+
+function arrived(location) {
+	if (myself.movement.arrived && myself.movement.location == location) {
+		return true;	
+	}
+	else{
+		return false;
+	}
+}
+
 //Colby's smart hacks
 function smart_move(destination,on_done)
 {

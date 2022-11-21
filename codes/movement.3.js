@@ -26,7 +26,37 @@ async function movementSubroutine() {
     }, timeout);
 }
 
+async function moveThyself() { // a merchant move by request loop
+    timeout = 200;
+    try {
+        if (myself.movement.arrived == false) {
+            if (parent.party[myself.movement.location]) {   
+                await smart_move(parent.party[myself.movement.location]);
+                myself.movement.arrived = true;     
+            } else {           
+                await smart_move(myself.movement.location);
+                myself.movement.arrived = true;  
+            }
+        }else if (myself.movement.party == true){
+            if (distance(parent.character, parent.party[myself.movement.location]) > 500) {
+                await smart_move(parent.party[myself.movement.location]);
+            }else{
+                move(parent.party[myself.movement.location].x,parent.party[myself.movement.location].y);
+            }
+            if (myself.client == undefined){ // Logic defines I have no clients, leave danger zones.
+                myself.movement.party = false;
+                requestMove('potions', false); // Free the lock right away. we aren't coming back here.
+            }
+        }
+        
+       
+    } catch (error) {
 
+    }
+    setTimeout(async () => {
+        moveThyself();
+    }, timeout);
+}
 /// if my target exists and I'm wihin range.
     //do nothing
 /// otherwise, I'm not in range

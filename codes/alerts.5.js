@@ -10,10 +10,45 @@ async function alertSubroutine() {
             myself.alert.low_hp = true;
         }
         myself.alert.rip = character.rip; // we can always update this
+
+        // potion inventory alerts.
+        if (myself.potions.hpot0 < 200){
+            myself.alert.low_hpot0 = true;
+        }
+        else {
+            myself.alert.low_hpot0 = false;
+        }
+        if (myself.potions.mpot0 < 200){
+            myself.alert.low_mpot0 = true;
+        }
+        else {
+            myself.alert.low_mpot0 = false;
+        }
+
+
+
     } catch (error) {
 
     }
     setTimeout(async () => {
         alertSubroutine();
+    }, timeout);
+}
+
+async function alertSubroutineMerchant() {
+    timeout = 100;
+    try {
+        if (myself.potions.hpot0 < 300) {
+            myself.alert.low_hpot0 = true;
+        }
+        if (myself.potions.mpot0 < 300) {
+            myself.alert.low_mpot0 = true;
+        }
+        
+    } catch (error) {
+
+    }
+    setTimeout(async () => {
+        alertSubroutineMerchant();
     }, timeout);
 }

@@ -7,25 +7,35 @@ load_code("helper");
 //init our global memory "myself"
 let myself = { // go to the darkside
     id : character.name,
+    client : null,
+    movement : {
+        location: "goo",
+        arrived: false,
+        party: false,
+        lock: false,
+    },
     markName : "bee",
     mark : get_target(),
     alert : {
         low_hp: false,
         low_mp: false,
         rip: character.rip,
+        low_hpot0: false,
+        low_mpot0: false,
     },
     others : {},
     cc : {
         local: [0,0,0]
     },
-    potions: {
-        hpot0 : 0,
-        mpot0 : 0,
-        hpot1 : 0,
-        mpot1 : 0,
+    potions: { // default to 300 to avoid logic checks until alert and inventory gets to them.
+        hpot0 : 300,
+        mpot0 : 300,
+        hpot1 : 300,
+        mpot1 : 300
     },
     inventory : {}
 };
+console.log(myself);
 
 if (character.name == "TwelvePounds") {
     start_character("Solamare","main");
@@ -60,6 +70,10 @@ if (character.ctype !== "merchant") {
     maintainParty();
 }
 else{ // Merchant Loads Code
+    load_code("movement");
+    moveThyself();
+    load_code("alerts");
+    alertSubroutineMerchant();
     load_code("messaging");
     metrics();
     load_code("party");

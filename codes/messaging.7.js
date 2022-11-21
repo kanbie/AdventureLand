@@ -69,8 +69,9 @@ function logPotions(){
     let hpot1Slot = findItemIndex("hpot1");
     let mpot1Slot = findItemIndex("mpot1");
 
-    myself.potions.hpot0 = character.items[hpot0Slot].q;
-    myself.potions.mpot0 = character.items[mpot0Slot].q;
-    myself.potions.hpot1 = character.items[hpot1Slot].q;
-    myself.potions.mpot1 = character.items[mpot1Slot].q;
-}
+    //this is a condition, execute if ture : execute if false statement. Its a one line if/else to catch the null from not finding an item.
+    (hpot0Slot) ? myself.potions.hpot0 = character.items[hpot0Slot].q : myself.potions.hpot0 = 0;
+    (mpot0Slot) ? myself.potions.mpot0 = character.items[mpot0Slot].q : myself.potions.mpot0 = 0;
+    (hpot1Slot) ? myself.potions.hpot1 = character.items[hpot1Slot].q : myself.potions.hpot1 = 0;
+    (mpot1Slot) ? myself.potions.mpot1 = character.items[mpot1Slot].q : myself.potions.mpot1 = 0;
+} 
